@@ -9,6 +9,7 @@ export default function BookReadingTracker() {
   const [currentBook, setCurrentBook] = useState({
     title: '',
     image: '',
+    readDate: '',
     quotes: []
   });
   const [currentQuote, setCurrentQuote] = useState({ text: '', page: '' });
@@ -36,7 +37,7 @@ export default function BookReadingTracker() {
       return;
     }
     setBooks([...books, { ...currentBook, id: Date.now() }]);
-    setCurrentBook({ title: '', image: '', quotes: [] });
+    setCurrentBook({ title: '', image: '', readDate: '', quotes: [] });
     setCurrentQuote({ text: '', page: '' });
     setShowAddForm(false);
   };
@@ -136,6 +137,22 @@ export default function BookReadingTracker() {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">읽은 날짜</label>
+                <input
+                  type="date"
+                  value={currentBook.readDate}
+                  onChange={(e) => setCurrentBook({ ...currentBook, readDate: e.target.value })}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-amber-500 focus:outline-none cursor-pointer"
+                  onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                  style={{ 
+                    position: 'relative',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'textfield'
+                  }}
+                />
+              </div>
+
               {currentBook.image && (
                 <img src={currentBook.image} alt="미리보기" className="w-32 h-auto rounded-lg shadow-md" />
               )}
@@ -188,7 +205,7 @@ export default function BookReadingTracker() {
               <button
                 onClick={() => {
                   setShowAddForm(false);
-                  setCurrentBook({ title: '', image: '', quotes: [] });
+                  setCurrentBook({ title: '', image: '', readDate: '', quotes: [] });
                   setCurrentQuote({ text: '', page: '' });
                 }}
                 className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
@@ -224,6 +241,11 @@ export default function BookReadingTracker() {
                   <p className="text-sm text-amber-600 text-center mt-1">
                     {book.quotes.length}개의 문구
                   </p>
+                  {book.readDate && (
+                    <p className="text-xs text-amber-500 text-center mt-1">
+                      읽은 날: {book.readDate}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -245,6 +267,9 @@ export default function BookReadingTracker() {
                         <div className="flex-1">
                           <h2 className="text-2xl font-bold text-amber-900">{book.title}</h2>
                           <p className="text-amber-600 mt-1">{book.quotes.length}개의 인상적인 문구</p>
+                          {book.readDate && (
+                            <p className="text-amber-500 text-sm mt-1">읽은 날: {book.readDate}</p>
+                          )}
                         </div>
                       </div>
                       <div className="flex gap-2">
