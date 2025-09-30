@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookOpen, Plus, Trash2, Edit2, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function BookReadingTracker() {
@@ -12,6 +12,23 @@ export default function BookReadingTracker() {
     quotes: []
   });
   const [currentQuote, setCurrentQuote] = useState({ text: '', page: '' });
+
+  // localStorage에서 데이터 로드
+  useEffect(() => {
+    const savedBooks = localStorage.getItem('bookLogBooks');
+    if (savedBooks) {
+      try {
+        setBooks(JSON.parse(savedBooks));
+      } catch (error) {
+        console.error('저장된 데이터를 불러오는데 실패했습니다:', error);
+      }
+    }
+  }, []);
+
+  // books 상태가 변경될 때마다 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('bookLogBooks', JSON.stringify(books));
+  }, [books]);
 
   const addBook = () => {
     if (!currentBook.title.trim()) {
