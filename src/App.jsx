@@ -6,6 +6,8 @@ export default function BookReadingTracker() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingQuote, setEditingQuote] = useState(null);
   const [expandedBook, setExpandedBook] = useState(null);
+  const [showAddQuoteInModal, setShowAddQuoteInModal] = useState(false);
+  const [modalQuote, setModalQuote] = useState({ text: '', page: '' });
   const [currentBook, setCurrentBook] = useState({
     title: '',
     image: '',
@@ -87,6 +89,20 @@ export default function BookReadingTracker() {
 
   const toggleBook = (bookId) => {
     setExpandedBook(expandedBook === bookId ? null : bookId);
+    setShowAddQuoteInModal(false);
+    setModalQuote({ text: '', page: '' });
+  };
+
+  const addQuoteToExpandedBook = () => {
+    if (modalQuote.text.trim()) {
+      setBooks(books.map(book =>
+        book.id === expandedBook
+          ? { ...book, quotes: [...book.quotes, { ...modalQuote, id: Date.now() }] }
+          : book
+      ));
+      setModalQuote({ text: '', page: '' });
+      setShowAddQuoteInModal(false);
+    }
   };
 
   return (
@@ -289,6 +305,59 @@ export default function BookReadingTracker() {
                     </div>
 
                     <div className="p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-bold text-amber-800">인상적인 문구</h3>
+                        {!showAddQuoteInModal && (
+                          <button
+                            onClick={() => setShowAddQuoteInModal(true)}
+                            className="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition flex items-center gap-2"
+                          >
+                            <Plus className="w-4 h-4" />
+                            문구 추가
+                          </button>
+                        )}
+                      </div>
+
+                      {showAddQuoteInModal && (
+                        <div className="bg-amber-50 p-4 rounded-lg border-2 border-amber-200 mb-4">
+                          <h4 className="font-semibold text-amber-800 mb-3">새 문구 추가</h4>
+                          <div className="space-y-3">
+                            <textarea
+                              value={modalQuote.text}
+                              onChange={(e) => setModalQuote({ ...modalQuote, text: e.target.value })}
+                              placeholder="인상적인 문구를 입력하세요"
+                              className="w-full px-3 py-2 border-2 border-amber-300 rounded-lg text-sm focus:border-amber-500 focus:outline-none h-20 resize-none"
+                            />
+                            <div className="flex gap-3">
+                              <input
+                                type="text"
+                                value={modalQuote.page}
+                                onChange={(e) => setModalQuote({ ...modalQuote, page: e.target.value })}
+                                placeholder="페이지 (예: 42)"
+                                className="w-32 px-3 py-2 border-2 border-amber-300 rounded-lg text-sm focus:border-amber-500 focus:outline-none"
+                              />
+                              <button
+                                onClick={addQuoteToExpandedBook}
+                                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2"
+                              >
+                                <Check className="w-4 h-4" />
+                                추가
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setShowAddQuoteInModal(false);
+                                  setModalQuote({ text: '', page: '' });
+                                }}
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition flex items-center gap-2"
+                              >
+                                <X className="w-4 h-4" />
+                                취소
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {book.quotes.length > 0 ? (
                         <div className="space-y-4">
                           {book.quotes.map((quote) => (
